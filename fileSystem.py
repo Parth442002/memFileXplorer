@@ -8,11 +8,13 @@ class FileSystem:
         self.current_dir = "/"
         self.root = {"/": {}}
 
+    # Private Method to get Absolute Path
     def _get_absolute_path(self, path: str) -> str:
         if path.startswith("/"):
             return path
         return os.path.join(self.current_dir, path)
 
+    # Method to make a new folder
     def mkdir(self, dir_name: str):
         new_dir_path = self._get_absolute_path(dir_name)
         current = self.root
@@ -20,6 +22,7 @@ class FileSystem:
         for child in children:
             current = current.setdefault(child, {})
 
+    # Method to list all children
     def ls(self, path: str = "") -> List:
         path = self._get_absolute_path(path)
         current = self.root
@@ -28,7 +31,16 @@ class FileSystem:
             if component:
                 current = current[component]
         result = list(current.keys())
-        # TO Skip the current Dir
-        if len(result) > 1:
-            return result[1:]
         return result
+
+    # Method to change current_directory
+    def cd(self, path: str) -> None:
+        if path == "/":
+            self.current_di = "/"
+        elif path == "~":
+            self.current_dir = "/"
+        elif path == "..":
+            children = self.current_dir.split("/")
+            self.current_dir = "/".join(children[:-1]) or "/"
+        else:
+            self.current_dir = self._get_absolute_path(path)

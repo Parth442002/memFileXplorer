@@ -22,6 +22,9 @@ while True:
             result = system.ls(string[1] if len(string) > 1 else "")
             print("\n".join(result))
 
+        elif command == "cd":
+            system.cd(string[1])
+
         else:
             print("Command not implemented !!!")
 
