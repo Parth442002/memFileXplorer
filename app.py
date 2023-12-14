@@ -25,6 +25,9 @@ while True:
         elif command == "cd":
             system.cd(string[1])
 
+        elif command == "touch":
+            system.touch(string[1])
+
         else:
             print("Command not implemented !!!")
 

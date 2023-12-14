@@ -2,7 +2,6 @@ import os
 from typing import List
 
 
-# FileSystem class to implement linux commands
 class FileSystem:
     def __init__(self) -> None:
         self.current_dir = "/"
@@ -36,11 +35,34 @@ class FileSystem:
     # Method to change current_directory
     def cd(self, path: str) -> None:
         if path == "/":
-            self.current_di = "/"
+            self.current_dir = "/"
         elif path == "~":
             self.current_dir = "/"
         elif path == "..":
-            children = self.current_dir.split("/")
-            self.current_dir = "/".join(children[:-1]) or "/"
+            components = self.current_dir.split("/")
+            self.current_dir = "/".join(components[:-1])
+            if not self.current_dir:
+                self.current_dir = "/"
         else:
-            self.current_dir = self._get_absolute_path(path)
+            destination_path = self._get_absolute_path(path)
+
+            # Check if the destination is a directory
+            destination = self.root
+            components = destination_path.split("/")
+            for component in components:
+                if component:
+                    destination = destination.get(component, {})
+
+            if isinstance(destination, dict):
+                self.current_dir = destination_path
+            else:
+                print(f"{path}: Not a directory")
+
+    def touch(self, file_path: str) -> None:
+        file_path = self._get_absolute_path(file_path)
+        current = self.root
+        children = file_path.split("/")
+        for child in children[:-1]:
+            if child:
+                current = current.setdefault(child, {})
+        current[children[-1]] = ""
