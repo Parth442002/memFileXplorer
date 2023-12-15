@@ -28,6 +28,13 @@ while True:
         elif command == "touch":
             system.touch(string[1])
 
+        elif command == "echo":
+            # Directly getting the string
+            system.echo(user_input)
+
+        elif command == "cat":
+            system.cat(string[1])
+
         else:
             print("Command not implemented !!!")
 
