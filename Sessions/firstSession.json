@@ -1,0 +1,9 @@
+{
+  "current_dir": "/src",
+  "root": {
+    "/": {},
+    "src": {
+      "index.txt": "Hello world from Parth"
+    }
+  }
+}

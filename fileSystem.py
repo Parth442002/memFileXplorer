@@ -264,7 +264,6 @@ class FileSystem:
 
             # Remove the file or directory
             del current[components[-1]]
-            print(f"rm: '{path}' removed")
         except KeyError:
             print(f"rm: cannot remove '{path}': No such file or directory")
         except Exception as e:
@@ -365,6 +364,5 @@ class FileSystem:
 
             # Use rm to remove the source after copying
             self.rm(source_path)
-            print(f"mv: '{source_path}' moved to '{destination_path}'")
         except Exception as e:
             print(f"mv: error moving '{source_path}' to '{destination_path}': {e}")
