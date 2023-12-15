@@ -78,7 +78,12 @@ This in-memory file system is implemented with basic file and directory manipula
     ```bash
     python main.py
     ```
-5. **Follow on-screen instructions to navigate and perform file system operations.**
+6. **Docker Setup**
+   ```
+   docker build -t memfile:1.0 .
+   docker run -it memfile:1.0
+   ```
+7. **Follow on-screen instructions to navigate and perform file system operations.**
 
 ## Command Examples
 - `mkdir directory_name`: Create a new directory.
