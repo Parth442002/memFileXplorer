@@ -222,9 +222,16 @@ class FileSystem:
             print(f"cp: cannot stat '{source_path}': No such file or directory")
             return
 
-        # If the destination is the current directory ('.'), update it to the current working directory
+        # Working with relative Imports
         if destination_path == ".":
             destination_path = self.current_dir
+        elif destination_path == "..":
+            components = self.current_dir.split("/")
+            destination_path = "/".join(components[:-1])
+            if not destination_path:
+                destination_path = "/"
+        elif destination_path == "~":
+            destination_path = "/"
 
         # Check if the destination path is a directory
         if self._isDirectory(destination_path):
@@ -232,15 +239,6 @@ class FileSystem:
             destination_path = os.path.join(
                 destination_path, os.path.basename(source_path)
             )
-
-        # Check if the destination file or directory already exists
-        """
-        if self._isValidPath(destination_path):
-            print(
-                f"cp: cannot copy '{source_path}' to '{destination_path}': File or directory is Invalid"
-            )
-            return
-        """
 
         try:
             if self._isDirectory(source_path):
@@ -263,3 +261,14 @@ class FileSystem:
                 self.echo(f'echo "{content}" > {destination_path}')
         except Exception as e:
             print(f"cp: error copying '{source_path}' to '{destination_path}': {e}")
+
+    def mv(self, source_path: str, destination_path: str) -> None:
+        try:
+            # Use cp to copy the source to the destination
+            self.cp(source_path, destination_path)
+
+            # Use rm to remove the source after copying
+            self.rm(source_path)
+            print(f"mv: '{source_path}' moved to '{destination_path}'")
+        except Exception as e:
+            print(f"mv: error moving '{source_path}' to '{destination_path}': {e}")

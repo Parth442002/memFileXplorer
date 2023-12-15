@@ -52,6 +52,11 @@ while True:
             else:
                 print("Source/Desitnation Missing !")
 
+        elif command == "mv":
+            if len(string) == 3:
+                system.mv(string[1], string[2])
+            else:
+                print("Source/Desitnation Missing !")
         else:
             print("Command not implemented !!!")
 
