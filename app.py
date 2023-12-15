@@ -1,4 +1,5 @@
 from fileSystem import FileSystem
+import re
 
 # File System instance
 system = FileSystem()
@@ -7,7 +8,6 @@ while True:
     user_input = input(f"{system.current_dir}> ")
 
     if user_input.lower() == "exit":
-        # fs.save_state()
         print("Exiting...")
         break
 
@@ -34,6 +34,17 @@ while True:
 
         elif command == "cat":
             system.cat(string[1])
+
+        elif command == "rm":
+            system.rm(string[1])
+
+        elif command == "grep":
+            if len(string) == 3:
+                match = re.match(r'^["\'](.+)["\']$', string[1])
+                pattern = match.group(1) if match else string[1]
+                system.grep(pattern, string[2])
+            else:
+                print("Either the Pattern or filename is missing")
 
         else:
             print("Command not implemented !!!")
