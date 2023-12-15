@@ -46,6 +46,12 @@ while True:
             else:
                 print("Either the Pattern or filename is missing")
 
+        elif command == "cp":
+            if len(string) == 3:
+                system.cp(string[1], string[2])
+            else:
+                print("Source/Desitnation Missing !")
+
         else:
             print("Command not implemented !!!")
 

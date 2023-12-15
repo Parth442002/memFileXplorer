@@ -12,7 +12,8 @@ class FileSystem:
     def _getAbsolutePath(self, path: str) -> str:
         if path.startswith("/"):
             return path
-        return os.path.join(self.current_dir, path)
+        # return os.path.join(self.current_dir, path)
+        return os.path.normpath(os.path.join(self.current_dir, path))
 
     def _isDirectory(self, path: str) -> bool:
         path = self._getAbsolutePath(path)
@@ -211,3 +212,54 @@ class FileSystem:
                 print("No match found")
         except Exception as e:
             print(f"grep: error reading '{file_path}': {e}")
+
+    def cp(self, source_path: str, destination_path: str = ".") -> None:
+        source_path = self._getAbsolutePath(source_path)
+        destination_path = self._getAbsolutePath(destination_path)
+
+        # Check if the source path exists
+        if not self._isValidPath(source_path):
+            print(f"cp: cannot stat '{source_path}': No such file or directory")
+            return
+
+        # If the destination is the current directory ('.'), update it to the current working directory
+        if destination_path == ".":
+            destination_path = self.current_dir
+
+        # Check if the destination path is a directory
+        if self._isDirectory(destination_path):
+            # If the destination is a directory, construct the destination path within that directory
+            destination_path = os.path.join(
+                destination_path, os.path.basename(source_path)
+            )
+
+        # Check if the destination file or directory already exists
+        """
+        if self._isValidPath(destination_path):
+            print(
+                f"cp: cannot copy '{source_path}' to '{destination_path}': File or directory is Invalid"
+            )
+            return
+        """
+
+        try:
+            if self._isDirectory(source_path):
+                # If source is a directory, create the destination directory
+                self.mkdir(destination_path)
+                # Copy each file from the source directory to the destination directory
+                for item in self.ls(source_path):
+                    item_source = os.path.join(source_path, item)
+                    item_destination = os.path.join(destination_path, item)
+                    if self._isDirectory(item_source):
+                        self.cp(item_source, item_destination)
+                    else:
+                        self.touch(item_destination)
+                        content = self._getFileContent(item_source)
+                        self.echo(f'echo "{content}" > {item_destination}')
+            else:
+                # If source is a file, create the destination file and copy the content
+                self.touch(destination_path)
+                content = self._getFileContent(source_path)
+                self.echo(f'echo "{content}" > {destination_path}')
+        except Exception as e:
+            print(f"cp: error copying '{source_path}' to '{destination_path}': {e}")
