@@ -15,6 +15,7 @@ class FileSystem:
         # return os.path.join(self.current_dir, path)
         return os.path.normpath(os.path.join(self.current_dir, path))
 
+    # Private method to check if path is a dir
     def _isDirectory(self, path: str) -> bool:
         path = self._getAbsolutePath(path)
         current = self.root
@@ -25,6 +26,7 @@ class FileSystem:
 
         return isinstance(current, dict)
 
+    # Private method to check if path already exists or not
     def _isValidPath(self, path: str) -> bool:
         path = self._getAbsolutePath(path)
         current = self.root
@@ -35,6 +37,7 @@ class FileSystem:
 
         return current is not None
 
+    # Private method to Update file content
     def _echoUpdateContent(self, file_path: str, content: str) -> None:
         file_path = self._getAbsolutePath(file_path)
         current = self.root
@@ -61,6 +64,7 @@ class FileSystem:
         # Append the content to the existing file or create a new file
         current[components[-1]] = current.get(components[-1], "") + content
 
+    # parse parameters from the echo command
     def _echoCommandParser(self, string: str):
         echo_parts = string.split(" ")
         quoted_contents = re.findall(r"'(.*?)'|\"(.*?)\"", string)
@@ -74,6 +78,7 @@ class FileSystem:
 
         return quoted_content, operation, filename
 
+    # Read file content
     def _getFileContent(self, path: str) -> str:
         path = self._getAbsolutePath(path)
         current = self.root
@@ -129,6 +134,7 @@ class FileSystem:
             else:
                 print(f"{path}: Not a directory")
 
+    # Method to create new file
     def touch(self, file_path: str) -> None:
         file_path = self._getAbsolutePath(file_path)
         current = self.root
@@ -138,6 +144,7 @@ class FileSystem:
                 current = current.setdefault(child, {})
         current[children[-1]] = ""
 
+    # Method to add/append/print data
     def echo(self, echo_string: str) -> None:
         content, operation, filename = self._echoCommandParser(echo_string)
 
@@ -153,6 +160,7 @@ class FileSystem:
                     "Invalid operation. Use '>' to update/override or '>>' to append."
                 )
 
+    # Method to read files
     def cat(self, file_path: str) -> None:
         file_path = self._getAbsolutePath(file_path)
         current = self.root
@@ -173,17 +181,25 @@ class FileSystem:
         else:
             print(f"cat: {file_path}: Is a directory or does not exist")
 
+    # Method to remove
     def rm(self, path: str) -> None:
-        path = self._getAbsolutePath(path)
-        current = self.root
-        components = path.split("/")
-        for component in components[:-1]:
-            if component:
-                current = current.get(component, {})
+        try:
+            path = self._getAbsolutePath(path)
+            current = self.root
+            components = path.split("/")
+            for component in components[:-1]:
+                if component:
+                    current = current.get(component, {})
 
-        # Remove the file or directory
-        del current[components[-1]]
+            # Remove the file or directory
+            del current[components[-1]]
+            print(f"rm: '{path}' removed")
+        except KeyError:
+            print(f"rm: cannot remove '{path}': No such file or directory")
+        except Exception as e:
+            print(f"rm: error removing '{path}': {e}")
 
+    # Method to search for patterns in file
     def grep(self, pattern: str, file_path: str) -> None:
         file_path = self._getAbsolutePath(file_path)
         # Check if the file exists
@@ -213,6 +229,7 @@ class FileSystem:
         except Exception as e:
             print(f"grep: error reading '{file_path}': {e}")
 
+    # Method to copy files/folders
     def cp(self, source_path: str, destination_path: str = ".") -> None:
         source_path = self._getAbsolutePath(source_path)
         destination_path = self._getAbsolutePath(destination_path)
@@ -262,6 +279,7 @@ class FileSystem:
         except Exception as e:
             print(f"cp: error copying '{source_path}' to '{destination_path}': {e}")
 
+    # Methods to move files/folders
     def mv(self, source_path: str, destination_path: str) -> None:
         try:
             # Use cp to copy the source to the destination
